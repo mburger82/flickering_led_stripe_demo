@@ -1,4 +1,4 @@
-# ESP32 RMT Driver for WS2812 - Flickering Problem
+# ESP32 RMT Driver Demo for WS2812 - Flickering Problem
 
 The RMT-Module of the ESP32 seams to be the perfect Module to drive WS2812 (or LEDs like that)
 But there is a issue when not only the rmt-module is running.
