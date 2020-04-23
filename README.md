@@ -1,52 +1,41 @@
-# RMT Transmit Example -- LED Strip
+# ESP32 RMT Driver for WS2812 - Flickering Problem
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+The RMT-Module of the ESP32 seams to be the perfect Module to drive WS2812 (or LEDs like that)
+But there is a issue when not only the rmt-module is running.
+For Showcase, the WIFI-Module is initialized. 
+As soon as the Wifi-Module is active and successfully connected, occasional flickering is appearing. 
+It seams this Problem comes from Interrupts, preventing the rmt-interrupt to reload Data fast enough.
 
-Although RMT peripheral is mainly designed for infrared remote applications, it can also support other generic protocols thanks to its flexible data format. [WS2812](http://www.world-semi.com/Certifications/WS2812B.html) is a digital RGB LED which integrates a driver circuit and a single control wire. The protocol data format defined in WS2812 is compatible to that in RMT peripheral. This example will illustrate how to drive an WS2812 LED strip based on the RMT driver.
+The Example supports preprocessor-switches to enable/disable wifi and other stuff.
+
+Another Problem of the rmt-ledstripe driver seams to be, that only 6 out of 8 Channels of the rmt-module work properly.
+Channel 6 and 7 keep crashing.
 
 ## How to Use Example
 
-### Hardware Required
+Output-Channels:
+* RMT-Channel-0-GPIO: 13
+* RMT-Channel-1-GPIO: 15
+* RMT-Channel-2-GPIO: 17
+* RMT-Channel-3-GPIO: 16
+* RMT-Channel-4-GPIO: 04
+* RMT-Channel-5-GPIO: 02
+* RMT-Channel-6-GPIO: 19
+* RMT-Channel-7-GPIO: 18
 
-* A development board with ESP32 SoC (e.g., ESP32-DevKitC, ESP-WROVER-KIT, etc.)
-* A USB cable for Power supply and programming
-* A WS2812 LED strip
-
-Connection :
+### Feature Switches:
+Multiple compiler switches enable/disable features.
 
 ```
-                             --- 5V
-                              |
-                              +
-GPIO18 +-----------------+---|>| (WS2812)
-                        DI    +
-                              |
-                             --- GND
+#define WIFI_ACTIVE  //Activate WIFI, should lead to occasional flickering
+#define MORELEDSTRIPES_ACTIVE  //Activate 5 more Stripes (for testing)
+#define MAXLEDSTRIPE_ACTIVE  //Activate RMTModule 6-7, so all RMT Channels are Running. Does not work. crash.
 ```
 
-### Configure the Project
+### Additional defines nescessary...
+```
+#define CONFIG_EXAMPLE_STRIP_LED_NUMBER 300  
+#define EXAMPLE_ESP_WIFI_SSID      "yourssid"
+#define EXAMPLE_ESP_WIFI_PASS      "yourpassword"
+```
 
-Open the project configuration menu (`idf.py menuconfig`). 
-
-In the `Example Connection Configuration` menu:
-
-* Set the GPIO number used for transmitting the IR signal under `RMT TX GPIO` optin.
-* Set the number of LEDs in a strip under `Number of LEDS in a strip` option.
-
-### Build and Flash
-
-Run `idf.py -p PORT flash monitor` to build, flash and monitor the project.
-
-(To exit the serial monitor, type ``Ctrl-]``.)
-
-See the [Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html) for full steps to configure and use ESP-IDF to build projects.
-
-## Example Output
-
-Connect the `DI` signal of WS2812 LED strip to the GPIO you set in menuconfig.
-
-Run the example, you will see a rainbow chasing demonstration effect. To change the chasing speed, you can update the `EXAMPLE_CHASE_SPEED_MS` value in `led_strip_main.c` file.
-
-## Troubleshooting
-
-For any technical queries, please open an [issue] (https://github.com/espressif/esp-idf/issues) on GitHub. We will get back to you soon.
